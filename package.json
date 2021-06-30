@@ -4,17 +4,23 @@
   "description": "",
   "main": "dist/server.ts",
   "scripts": {
-    "server": "ts-node src/server.ts",
+    "server": "ts-node src/server/cli.ts",
+    "client": "ts-node src/client/cli.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@json-rpc-tools/utils": "^1.6.1",
     "@walletconnect/client": "^1.4.1",
+    "@walletconnect/types": "^1.4.1",
+    "algosdk": "^1.9.1",
+    "prompts": "^2.4.1",
     "tslib": "^2.2.0"
   },
   "devDependencies": {
+    "@types/prompts": "^2.0.10",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
   }
