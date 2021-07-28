@@ -13,8 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "@json-rpc-tools/utils": "^1.6.1",
-    "@walletconnect/client": "^1.4.1",
-    "@walletconnect/types": "^1.4.1",
+    "@walletconnect/client": "^1.5.0",
+    "@walletconnect/types": "^1.5.0",
     "algosdk": "^1.9.1",
     "prompts": "^2.4.1",
     "tslib": "^2.2.0"
