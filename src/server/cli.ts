@@ -42,6 +42,9 @@ async function main() {
       try {
         const response = await session.signTransaction(txn, "Please sign this transaction");
         console.log('Signed transaction: ', Buffer.from(response).toString('base64'));
+
+        // end the session now
+        await session.close();
       } catch (err) {
         console.log(err);
       }
