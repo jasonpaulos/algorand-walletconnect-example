@@ -1,7 +1,11 @@
 # Algorand WalletConnect Example
 
 This repo contains examples of how to use the [WalletConnect](https://walletconnect.org/) protocol
-to facilitate transaction signing on the Algorand blockchain.
+to facilitate transaction signing on the Algorand blockchain. It uses the [Algorand Wallet Transaction Signing API](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0001.md)
+standard to format transaction signing requests.
+
+Note the code here does not perform any safety checks. Consult the official spec to see the safety
+checks that must be performed.
 
 This repo contains two parts: the server and the client.
 

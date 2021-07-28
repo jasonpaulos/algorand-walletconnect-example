@@ -1,7 +1,5 @@
 import prompts from 'prompts';
 import algosdk from 'algosdk';
-import WalletConnect from "@walletconnect/client";
-import { SignTxnParams, SignTxnOpts, WalletTransaction } from '../types';
 import { AlgorandWCClient } from './client';
 
 async function main() {
