@@ -82,7 +82,7 @@ async function main() {
     throw new Error("Transaction signing not successful");
   });
 
-  await session.connect((peerMeta) => {
+  await session.connect((chainId, peerMeta) => {
     console.log("Peer is: ", JSON.stringify(peerMeta));
     return [account.addr];
   });

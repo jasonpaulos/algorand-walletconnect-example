@@ -2,16 +2,18 @@ import WalletConnect from "@walletconnect/client";
 import { IClientMeta } from "@walletconnect/types";
 import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 import algosdk from "algosdk";
-import { ALGORAND_CHAIN_ID, ALGORAND_SIGN_TRANSACTION_REQUEST } from "../constants";
+import { ALGORAND_TESTNET_CHAIN_ID, ALGORAND_SIGN_TRANSACTION_REQUEST } from "../constants";
 import { WalletTransaction, SignTxnParams, MultisigMetadata } from "../types";
 
 export interface SessionConnectResponse {
   peerId: string;
   peerMeta?: IClientMeta;
   accounts: string[];
+  chainId: number;
 }
 
 export interface SessionUpdateResponse {
+  chainId: number;
   accounts: string[];
 }
 
@@ -33,6 +35,7 @@ export class AlgorandWCServerSession {
   peerId?: string;
   peerMeta?: IClientMeta;
   accounts?: string[];
+  chainId?: number;
 
   constructor(bridgeUrl: string, details?: IClientMeta) {
     this.connector = new WalletConnect({
@@ -46,24 +49,28 @@ export class AlgorandWCServerSession {
   }
 
   async _listen(): Promise<void> {
-    await this.connector.createSession({ chainId: ALGORAND_CHAIN_ID });
+    await this.connector.createSession({ chainId: ALGORAND_TESTNET_CHAIN_ID });
   }
 
   onConnect(handler: (error: Error | null, response: SessionConnectResponse) => unknown) {
     this.connector.on("connect", (err, payload) => {
-      const { peerId, peerMeta, accounts }: SessionConnectResponse = payload.params[0];
+      const { peerId, peerMeta, accounts, chainId }: SessionConnectResponse = payload.params[0];
+      console.log(`Session connect response: ${JSON.stringify(payload)}`);
       this.peerId = peerId;
       this.peerMeta = peerMeta;
       this.accounts = accounts;
-      handler(err, { peerId, peerMeta, accounts });
+      this.chainId = chainId;
+      handler(err, { peerId, peerMeta, accounts, chainId });
     });
   }
 
   onUpdate(handler: (error: Error | null, response: SessionUpdateResponse) => unknown) {
     this.connector.on("session_update", (err, payload) => {
-      const { accounts }: SessionUpdateResponse = payload.params[0];
+      console.log(`Session update response: ${JSON.stringify(payload)}`);
+      const { accounts, chainId }: SessionUpdateResponse = payload.params[0];
       this.accounts = accounts;
-      handler(err, { accounts });
+      this.chainId = chainId;
+      handler(err, { accounts, chainId });
     });
   }
 
@@ -82,6 +89,7 @@ export class AlgorandWCServerSession {
     const txnInGroup: TransactionInGroup = {
       txn,
       shouldSign: true,
+      message: "Specific message for this transaction."
     };
     const response = await this.signTransactionGroup([txnInGroup], message);
     if (response[0] == null) {

@@ -24,18 +24,13 @@ async function main() {
 
     // ask client to sign transaction in 1 second
     setTimeout(async () => {
+      const client = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '');
+      const suggestedParams = await client.getTransactionParams().do();
       const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: res.accounts[0],
         to: "ERKK6KJUTU6VSZST5C5EH63PFVOXT5RMPS2SAAUGLRXSDBBMH6TJTI5XHU",
         amount: 1000000,
-        suggestedParams: {
-          fee: 1000,
-          flatFee: true,
-          firstRound: 10000,
-          lastRound: 10200,
-          genesisHash: 'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=',
-          genesisID: '',
-        }
+        suggestedParams,
       });
 
       console.log('Asking client to sign transaction ', txn.txID());

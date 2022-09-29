@@ -17,6 +17,8 @@ export class AlgorandWCClientSession {
 
   connector: WalletConnect;
   events: EventEmitter;
+  peerId?: string;
+  peerMeta?: IClientMeta;
 
   constructor(uri: string, details?: IClientMeta) {
     this.connector = new WalletConnect({
@@ -27,14 +29,16 @@ export class AlgorandWCClientSession {
     this.events = new EventEmitter();
   }
 
-  async connect(getAccounts: (peerMeta?: IClientMeta) => string[] | Promise<string[]>) {
+  async connect(getAccounts: (chainId: number, peerMeta?: IClientMeta) => string[] | Promise<string[]>) {
     await this.connector.createSession();
   
-    this.connector.on("session_update", err => {
+    this.connector.on("session_update", (err, payload) => {
       if (err) {
         this.events.emit("error", err);
         return;
       }
+
+      console.log(`Session update: ${JSON.stringify(payload)}`)
 
       // nothing to update
     });
@@ -67,18 +71,23 @@ export class AlgorandWCClientSession {
           reject(err)
           return;
         }
+
+        console.log(`Session connect request: ${JSON.stringify(payload)}`);
   
-        const { peerMeta } = payload.params[0];
+        const { peerId, peerMeta, chainId } = payload.params[0];
 
         let accounts: string[];
         try {
-          accounts = await getAccounts(peerMeta);
+          accounts = await getAccounts(chainId, peerMeta);
         } catch (err) {
           this.connector.rejectSession({ message: "Client rejected session" });
           return;
         }
+
+        this.peerId = peerId;
+        this.peerMeta = peerMeta;
     
-        this.connector.approveSession({ chainId: this.connector.chainId, accounts });
+        this.connector.approveSession({ chainId, accounts });
         resolve();
       });
     });
